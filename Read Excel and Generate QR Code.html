@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Read Excel File</title>
+  </head>
+  <body>
+    <input type="file" id="fileInput" onchange="readFile()">
+    <table id="dataTable">
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+    <script>
+      function readFile() {
+  // Get the input file element
+  const fileInput = document.getElementById('fileInput');
+
+  // Get the Excel file from the input element
+  const file = fileInput.files[0];
+
+  // Create a new FileReader object
+  const reader = new FileReader();
+
+  // Set up the reader to read the Excel file as an array buffer
+  reader.readAsArrayBuffer(file);
+
+  // Once the reader has loaded the file, convert it to a workbook object
+  reader.onload = function(e) {
+    const data = new Uint8Array(reader.result);
+    const workbook = XLSX.read(data, {type: 'array'});
+
+    // Get the first sheet of the workbook
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+
+    // Convert the sheet to a JSON object
+    const jsonData = XLSX.utils.sheet_to_json(sheet, {header: 1});
+
+    // Get the table element and populate it with the JSON data
+    const table = document.getElementById('dataTable');
+    table.innerHTML = '';
+
+    for (let i = 0; i < jsonData.length; i++) {
+      const row = table.insertRow(i);
+      for (let j = 0; j < jsonData[i].length; j++) {
+        const cell = row.insertCell(j);
+        cell.innerHTML = jsonData[i][j];
+      }
+    }
+  }
+}
+
+    </script>
+  </body>
+</html>
