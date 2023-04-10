@@ -6,16 +6,13 @@
 
     <style>
         #qrcode {
-  width: 160px;
-  height: 160px;
-  margin-top: 15px;
-}
-
+          width: 160px;
+          height: 160px;
+          margin-top: 15px;
+        }
     </style>
 </head>
   <body>
-    
-
     <form>
         <h1>QR Code Generator</h1>
         <input
@@ -27,11 +24,8 @@
         <button type="button" onclick="generateQRCode()">Generate QR Code</button>
         <a id='qrdl' hidden>Download</a>
         <div id="qr-code"></div>
-        
-        
       </form>
       <div id="qrcode"></div>
-
   </body>
 
   <script>
@@ -61,7 +55,6 @@
     } else {
           alert("Please enter a valid URL");
         }
-        
     }
     </script>
 </html>
