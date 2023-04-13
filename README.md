@@ -1,2 +1,2 @@
 # QR-Code-Generator
-This page to read the URL from Excel file then generate a QR Code for each one. 
+This pages to upload and read the Excel file to generate a QR Code for each entity. 
