@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Read Excel File</title>
+</head>
+
+<body>
+  <h1>QR Code Generator</h1>
+  <input type="file" id="fileInput" onchange="readFile()">
+
+  <br>
+  <!-- table to display the excel data -->
+  <table id="display_excel_data" border="1"></table>
+  <table id="dataTable"></table>
+  <div id="qrcodes"></div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+
+  <script>
+    function readFile() {
+      // Get the input file element
+      const fileInput = document.getElementById('fileInput');
+
+      // Get the Excel file from the input element
+      const file = fileInput.files[0];
+
+      // Create a new FileReader object
+      const reader = new FileReader();
+
+      // Set up the reader to read the Excel file as an array buffer
+      reader.readAsArrayBuffer(file);
+
+      // Once the reader has loaded the file, convert it to a workbook object
+      reader.onload = function (e) {
+        const data = new Uint8Array(reader.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        // Get the first sheet of the workbook
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        // Convert the sheet to a JSON object
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        // displayJsonToHtmlTable(jsonData);
+
+        // return; // exit all remainning code 
+
+        // Get the table element and populate it with the JSON data
+        const table = document.getElementById('dataTable');
+        table.innerHTML = '';
+
+        //const user = document.getElementById('user');
+        //user.innerHTML = '';
+
+        for (let i = 0; i < jsonData.length; i++) {
+          const row = table.insertRow(i);
+          for (let j = 0; j < jsonData[i].length; j++) {
+            const cell = row.insertCell(j);
+            cell.innerHTML = jsonData[i][j];
+
+            //user.innerHTML = jsonData[i][j];
+            generateQRCode(jsonData[i][j]);
+          }
+        }
+      }
+    }
+
+
+    async function generateQRCode(input) {
+
+      var userName = input;
+      var input = 'API Key' + input;
+
+      let qrDiv = document.querySelector(`#qrcodes`);
+
+      let qrElm = document.createElement('div');
+      qrElm.setAttribute('id', 'qrcode' + userName);
+
+      qrDiv.appendChild(qrElm);
+
+      if (input) {
+        var qrcode = new QRCode(qrElm, {
+          text: input,
+          width: 256,
+          height: 256,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+
+        await qrcode.makeCode(input);
+
+        delay(100).then(() => {
+          let qrImgElm = document.querySelector(`#qrcode${userName} img`);
+
+          let qrImgSrcElm = qrImgElm.getAttribute('src');
+
+          qrDownloadElm = document.createElement('a');
+          qrDownloadElm.setAttribute('id', 'qrDownload' + userName);
+          qrDownloadElm.setAttribute('href', qrImgSrcElm);
+          qrDownloadElm.setAttribute('download', userName);
+          qrDownloadElm.removeAttribute('hidden');
+
+          qrElm.appendChild(qrDownloadElm);
+
+          document.getElementById("qrDownload" + userName).click();
+        });
+
+      } else {
+        alert("Please enter a valid URL");
+      }
+    }
+
+
+    //Method to display the data in HTML Table
+    function displayJsonToHtmlTable(jsonData) {
+      var table = document.getElementById("display_excel_data");
+      if (jsonData.length > 0) {
+        var htmlData = '<tr><th>Name</th><th>QR Code</th></tr>';
+        for (var i = 0; i < jsonData.length; i++) {
+          var row = jsonData[i];
+          htmlData += '<tr><td>' + row + '</td><td>' + row["Address"]
+            + '</td></tr>';
+
+          generateQRCode(row);
+        }
+        table.innerHTML = htmlData;
+      } else {
+        table.innerHTML = 'There is no data in Excel';
+      }
+    }
+
+    // Very important func to delay the DOM parsing and download files
+    function delay(time) {
+      return new Promise(resolve => setTimeout(resolve, time));
+    }
+
+
+
+  </script>
+</body>
+
+</html>
