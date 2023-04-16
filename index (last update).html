@@ -73,7 +73,7 @@
     async function generateQRCode(input) {
 
       var userName = input;
-      var input = 'API Key' + input;
+      var input = 'https://phcceventsportal.powerappsportals.com/Employee/?un=' + input;
 
       let qrDiv = document.querySelector(`#qrcodes`);
 
@@ -115,7 +115,6 @@
       }
     }
 
-
     //Method to display the data in HTML Table
     function displayJsonToHtmlTable(jsonData) {
       var table = document.getElementById("display_excel_data");
@@ -138,9 +137,6 @@
     function delay(time) {
       return new Promise(resolve => setTimeout(resolve, time));
     }
-
-
-
   </script>
 </body>
 
